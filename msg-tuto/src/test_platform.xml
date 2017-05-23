@@ -1,0 +1,28 @@
+<?xml version='1.0'?>
+ <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+ <platform version="3">
+ <AS  id="AS0"  routing="Floyd">
+   <!-- For using with chainsend, very simple 8-node platform -->
+   <host id="host0" power="98.095Mf"/>
+   <host id="host1" power="76.296Mf"/>
+   <host id="host2" power="96.296Mf"/>
+   <host id="host3" power="97.296Mf"/>
+   <host id="host4" power="97.296Mf"/>
+   <link id="link1" bandwidth="41279125" latency="5.9904e-05"/>
+   <link id="link2" bandwidth="34285625" latency="0.000514433"/>
+   <link id="link3" bandwidth="11618875" latency="0.00018998"/>
+   <link id="link4" bandwidth="7209750" latency="0.001461517"/>
+   <route src="host0" dst="host1">
+     <link_ctn id="link1"/>
+   </route>
+   <route src="host0" dst="host2">
+     <link_ctn id="link2"/>
+   </route>
+   <route src="host0" dst="host3">
+     <link_ctn id="link3"/>
+   </route>
+   <route src="host0" dst="host4">
+     <link_ctn id="link4"/>
+   </route>
+ </AS>
+ </platform>

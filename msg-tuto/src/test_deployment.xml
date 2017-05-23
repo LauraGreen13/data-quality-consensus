@@ -1,0 +1,29 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3"><!-- For using with chainsend -->
+
+  <process host="host0" function="master">
+	<argument value="5"/>       <!-- Number of tasks -->
+     	<argument value="500000"/>  <!-- Computation size of tasks -->
+     	<argument value="10000"/>   <!-- Communication size of tasks -->
+     	<argument value="host1"/>  <!-- First worker -->
+     	<argument value="host2"/>   <!-- Second worker -->
+     	<argument value="host3"/>  <!-- Third worker -->
+     	<argument value="host4"/> <!-- Last worker -->
+     	<argument value="host0"/> <!-- Me! I can work too! -->
+  </process>
+
+  <!-- Peers -->
+  <process host="host1" function="worker" on_failure="RESTART">
+
+  </process>
+  <process host="host2" function="worker" on_failure="RESTART">
+
+  </process>
+  <process host="host3" function="worker" on_failure="RESTART">
+
+  </process>
+  <process host="host4" function="worker" on_failure="RESTART">
+
+  </process>
+</platform>
