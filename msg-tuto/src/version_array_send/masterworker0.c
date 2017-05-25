@@ -49,7 +49,9 @@ static double parse_double(const char *string)
 }
 
 typedef struct task_data {
-  int value;
+
+  int value_size;
+  int *value;
 
 } s_task_data, *task_data;
 
@@ -86,12 +88,16 @@ int master(int argc, char *argv[])
     todo = xbt_new0(msg_task_t, number_of_tasks);
 
     for (i = 0; i < number_of_tasks; i++) {
-      sprintf(sprintf_buffer, "Task_%d", random_int(1, 4));
+      sprintf(sprintf_buffer, "Task_%d", i);
 
       task_data data = xbt_new(s_task_data, 1);
 
-      data->value = random_int(8, 1000);
-      
+      data->value_size = 3;
+      data->value = (int*) malloc(3*sizeof(int));
+      for (i=0; i < 3; i++) {
+        data->value[i] = i;
+      }
+
       todo[i] = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, data);
 
     }
@@ -119,64 +125,27 @@ int master(int argc, char *argv[])
 
   msg_comm_t *comms = xbt_new0(msg_comm_t, workers_count - 1);
 
+  xbt_dynar_foreach(host_list, i, host) {
+    const char *descr = MSG_host_get_name(host);
+//    MSG_host_set_property_value(host, "stream", (char*)stream, NULL);
 
-// for (i = 0; i < random_int(10, 20); i++) {
-//       const char *descr;
-//       sprintf(descr, "host%d", random_int(1, 4));
+    if (strncmp(descr, myName, 5) != 0) {
+      XBT_INFO("Sending \"%s\" to \"%s\"", todo[i]->name, descr);
+      comms[i-1] = MSG_task_isend(todo[i], descr);
+      XBT_INFO("Sent");	
+    }
 
-//       sprintf(sprintf_buffer, "Task_%d", random_int(1, 4));
-
-//       task_data data = xbt_new(s_task_data, 1);
-
-//       data->value = random_int(8, 1000);
-      
-//       MSG_task_isend(MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, data), descr);
-//       //todo[i] = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, data);
-
-//     }
-
-
-
-// broadcast message
-//   xbt_dynar_foreach(host_list, i, host) {
-//     const char *descr = MSG_host_get_name(host);
-//     sprintf(descr, "host%d", random_int(1, 4));
-// //    MSG_host_set_property_value(host, "stream", (char*)stream, NULL);
-
-//     if (strncmp(descr, myName, 5) != 0) {
-//       XBT_INFO("Sending \"%s\" to \"%s\"", todo[i]->name, descr);
-//       comms[i-1] = MSG_task_isend(todo[i], descr);
-//       XBT_INFO("Sent");	
-//     }
-
-//   }
-
-
-int first = 0;
-  for (i = 0; i < number_of_tasks; i++) {
-    char descr[5];
-    sprintf(descr, "host%d", random_int(1, 4));
-    XBT_INFO("Sending \"%s\" to \"%s\"",
-          todo[i]->name, descr);
-    
-    MSG_task_send(todo[i], descr);
-
-    // if (first == 0) {
-
-    //   char sprintf_buffer[64];
-    //   sprintf(sprintf_buffer, "Task_%d", random_int(1, 4));
-
-    //   task_data data = xbt_new(s_task_data, 1);
-
-    //   data->value = random_int(8, 1000);
-    //   MSG_task_send(MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, data), descr);
-    //   MSG_task_send(MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, data), descr);
-    //   first = 1;
-    // }
-
-    XBT_INFO("Sent");
   }
 
+/*
+  for (i = 0; i < number_of_tasks; i++) {
+    XBT_INFO("Sending \"%s\" to \"%s\"",
+          todo[i]->name, MSG_host_get_name(workers[i % workers_count]));
+    
+    MSG_task_send(todo[i], MSG_host_get_name(workers[i % workers_count]));
+    XBT_INFO("Sent");
+  }
+*/
   // XBT_INFO
   //     ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   // for (i = 0; i < workers_count; i++) {
@@ -184,12 +153,12 @@ int first = 0;
   //   MSG_task_send(finalize, MSG_host_get_name(workers[i]));
   // }
 
-  //MSG_comm_waitall(comms, workers_count - 1, -1);
-  // for (i = 1; i < workers_count; i++) {
-  //     MSG_comm_destroy(comms[i - 1]);
-  //     // MSG_task_destroy(tasks[i - 1]);
-  //   }
-  XBT_INFO("++++++++++++++++++++++++FINISH+++++++++++++++++++++++++");
+  MSG_comm_waitall(comms, workers_count - 1, -1);
+  for (i = 1; i < workers_count; i++) {
+      MSG_comm_destroy(comms[i - 1]);
+      // MSG_task_destroy(tasks[i - 1]);
+    }
+  XBT_INFO("Goodbye now!");
   free(workers);
   free(todo);
   return 0;
