@@ -72,12 +72,29 @@ int peer_execute_task(peer_t peer, msg_task_t task)
 
 void validate_received_data(peer_t peer, task_data data) {
 
+
+  if (peer->my_data_length == 5) {
+      XBT_INFO("DETECTED EXCEEDING NUMBER OF VALUES. Peer has: %d values", peer->my_data_length);
+      return;
+  }
+
+  if (data->value < 0) {
+    XBT_INFO("DETECTED NEGATIVE VALUE: %d", data->value);
+    return;
+  }
+    
+  if (data->value % 2 != 0) {
+    XBT_INFO("DETECTED NOT EVEN VALUE: %d", data->value);
+    return;
+  }
+
   int i;
   for (i=0; i < peer->my_data_length; i++) {
     if (data->value == peer->my_data[i]) {
       XBT_INFO("DETECTED DUPLICATE: %d", data->value);
       return;
     }
+
   }
 
   peer->my_data[peer->my_data_length] = data->value;
@@ -98,7 +115,7 @@ msg_error_t peer_wait_for_message(peer_t peer)
   int done = 0;
 
   while (!done) {
-    int x = random_int(1, 7);
+    int x = random_int(1, 5);
     XBT_INFO("peer goes to sleep for %d", x);
     MSG_process_sleep(x);
 

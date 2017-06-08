@@ -90,7 +90,7 @@ int master(int argc, char *argv[])
 
       task_data data = xbt_new(s_task_data, 1);
 
-      data->value = random_int(8, 1000);
+      data->value = random_int(-5, 1000);
       
       todo[i] = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, data);
 

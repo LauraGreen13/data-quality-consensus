@@ -3,7 +3,7 @@
 <platform version="3"><!-- For using with chainsend -->
 
   <process host="host0" function="master">
-	<argument value="10"/>       <!-- Number of tasks -->
+	<argument value="30"/>       <!-- Number of tasks -->
      	<argument value="500000"/>  <!-- Computation size of tasks -->
      	<argument value="10000"/>   <!-- Communication size of tasks -->
      	<argument value="host1"/>  <!-- First worker -->
